@@ -81,7 +81,7 @@ const camera = new THREE.PerspectiveCamera(
     1000
 );
 camera.position.x = 4;
-camera.position.y = 19;
+camera.position.y = 20;
 camera.position.z = 30;
 scene.add(camera);
 
@@ -94,90 +94,70 @@ scene.add(ambientLight);
 // ===========MESHES
 
 // Floor
-// const floorHeight = 1;
-// const floorWidth = 800;
-// const floorDepth = 800;
-// const floorPositionX = 0;
-// const floorPositionY = 0;
-// const floorPositionZ = 0;
-// const floorGeometry = new BoxGeometry(floorWidth, floorHeight, floorDepth);
-// const floorMaterial = new MeshPhongMaterial({
-//     color: 0xffffff,
-//     shininess: 10, // 빛을 반사하는 정도 (조절 가능)
-//     reflectivity: 0.3, // 빛을 얼마나 반사할지 (조절 가능)
-// });
-// const floorMesh = new Mesh(floorGeometry, floorMaterial);
-// floorMesh.position.set(floorPositionX, floorPositionY, floorPositionZ);
-// scene.add(floorMesh);
-//
-// const floorShape = new CANNON.Box(
-//     new CANNON.Vec3(floorWidth/2, floorHeight/2, floorDepth/2)
-// );
-// const floorBody = new CANNON.Body({
-//     mass: 0,
-//     position: new CANNON.Vec3(floorPositionX, floorPositionY, floorPositionZ)
-// });
-// floorBody.addShape(floorShape);
-// world.addBody(floorBody);
-//
-//
-// const frontWall = floorMesh.clone();
-// frontWall.rotation.set(MathUtils.degToRad(90),0,0);
-// frontWall.position.set(0,0,-(floorDepth/2));
-// scene.add(frontWall);
-// const frontWallShape = new CANNON.Box(
-//     new CANNON.Vec3(floorWidth/2, floorHeight/2, floorDepth/2)
-// );
-// const frontWallBody = new CANNON.Body({
-//     mass: 0,
-//     position: new CANNON.Vec3(floorPositionX, floorPositionY, floorPositionZ)
-// });
-// floorBody.addShape(frontWallShape);
-// world.addBody(frontWallBody);
-//
-// const backWall = floorMesh.clone();
-// backWall.rotation.set(MathUtils.degToRad(90),0,0);
-// backWall.position.set(0,0,(floorDepth/2));
-// scene.add(backWall);
-// const backWallShape = new CANNON.Box(
-//     new CANNON.Vec3(floorWidth/2, floorHeight/2, floorDepth/2)
-// );
-// const backWallBody = new CANNON.Body({
-//     mass: 0,
-//     position: new CANNON.Vec3(floorPositionX, floorPositionY, floorPositionZ)
-// });
-// floorBody.addShape(backWallShape);
-// world.addBody(backWallBody);
-//
-// const rightWall = floorMesh.clone();
-// rightWall.rotation.set(0,0,MathUtils.degToRad(90));
-// rightWall.position.set(floorWidth/2,0,0);
-// scene.add(rightWall);
-// const rightWallShape = new CANNON.Box(
-//     new CANNON.Vec3(floorWidth/2, floorHeight/2, floorDepth/2)
-// );
-// const rightWallBody = new CANNON.Body({
-//     mass: 0,
-//     position: new CANNON.Vec3(floorPositionX, floorPositionY, floorPositionZ)
-// });
-// floorBody.addShape(rightWallShape);
-// world.addBody(rightWallBody);
+const floorHeight = 1;
+const floorWidth = 10000;
+const floorDepth = 10000;
+const floorPositionX = 0;
+const floorPositionY = 0;
+const floorPositionZ = 0;
+
+const marbleTexture = textureLoader.load('./image/marble-640.jpg');
+marbleTexture.wrapS = THREE.RepeatWrapping;
+marbleTexture.wrapT = THREE.RepeatWrapping;
+marbleTexture.repeat.set(floorWidth/20, floorDepth/20); // 스케일 조절 (반복 수)
+
+const floorGeometry = new BoxGeometry(floorWidth, floorHeight, floorDepth);
+const floorMaterial = new MeshPhongMaterial({
+    map:marbleTexture,
+    color: 0xffffff, // 바닥 기본 색상
+    shininess: 10, // 빛을 반사하는 정도 (조절 가능)
+    reflectivity: 0.3, // 빛을 얼마나 반사할지 (조절 가능)
+});
+const floorMesh = new Mesh(floorGeometry, floorMaterial);
+floorMesh.position.set(floorPositionX, floorPositionY, floorPositionZ);
+scene.add(floorMesh);
+
+interface wallInterface {
+    height: number,
+    width : number,
+    depth: number,
+    x: number,
+    y: number,
+    z: number
+}
+function wall(info?: wallInterface){
+    const height = info ? info.height : 50;
+    const width = info ? info.width : 200;
+    const depth = info ? info.depth : 20;
+    const x = info ? info.x : 0;
+    const y = info ? info.y : height/2;
+    const z = info ? info.z : 0;
+
+    const geometry = new BoxGeometry(width, height, depth);
+    const material = new MeshPhongMaterial({
+
+        color: 0xffffff, // 바닥 기본 색상
+        shininess: 10, // 빛을 반사하는 정도 (조절 가능)
+        reflectivity: 0.3, // 빛을 얼마나 반사할지 (조절 가능)
+    });
+    const mesh = new Mesh(geometry, material);
+    mesh.position.set(x, y, z);
+    dotGuiAdd(mesh.position, '');
+    scene.add(mesh);
+}
+
+wall();
 
 
-gltfLoader.load(
-    './gltf/basic-box-house.glb',
-    gltf => {
-        const mesh = gltf.scene.children[0];
-        // @ts-ignore
-        const material = mesh.material as MeshStandardMaterial;
-        material.color.set(0xffffff);
 
-        scene.add(mesh);
 
-        dotGuiAdd(mesh.position, 'mesh position');
-        dotGuiAdd(mesh.rotation, 'mesh rotation');
-    }
-);
+
+
+
+
+
+
+
 
 
 
@@ -247,14 +227,10 @@ const clock = new THREE.Clock();
 function draw() {
     const delta = clock.getDelta();
     const time = clock.getElapsedTime();
-    let cannonStepTime = 1/60;
-    if (delta < 0.01) cannonStepTime = 1/120;
-    world.step(cannonStepTime);
 
-    // // 위치 카피
-    // floorMesh.position.copy(
-    //     threeVector3FromCannonVec3(floorBody.position)
-    // );
+
+
+
 
 
     // 캐릭터 이동
