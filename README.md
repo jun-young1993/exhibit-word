@@ -1,2 +1,2 @@
-# exhibit-word
-exhibit-word
+# juny-world
+juny-world
