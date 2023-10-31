@@ -14,7 +14,10 @@ import {PointerLockControls} from "three/examples/jsm/controls/PointerLockContro
 import {GLTFLoader} from "three/examples/jsm/loaders/GLTFLoader";
 import dat from 'dat.gui';
 import * as CANNON from 'cannon-es';
-import {threeVector3FromCannonVec3} from "./lib/convert";
+import {threeVector3FromCannonVec3} from "utills/convert";
+import { camera, canvas, initialValue, renderer, scene, textureLoader, world } from 'lib/common';
+import BaseContent from 'lib/base-content';
+import Floor from 'contents/floor';
 
 const isDev = true;
 const datGui = new dat.GUI();
@@ -32,16 +35,9 @@ const dotGuiAdd = function (object:object,name:string) : void
     }
 }
 
-//Canvas
-const canvas = document.querySelector('#three-canvas') as HTMLCanvasElement;
-// ========== GLTF
-const gltfLoader = new GLTFLoader();
-// ========== textureLoader
-const textureLoader = new TextureLoader();
+initialValue();
 
-// cannon world
-const world = new CANNON.World();
-world.gravity.set(0, -9.81, 0); // 중력 설정
+
 
 
 
@@ -50,40 +46,12 @@ world.gravity.set(0, -9.81, 0); // 중력 설정
 const spotLight = new THREE.SpotLight(0xffffff);
 spotLight.castShadow = true;
 
-// Renderer
-const renderer = new THREE.WebGLRenderer({
-    canvas: canvas,
-    antialias: true
-});
-renderer.setSize(window.innerWidth, window.innerHeight);
-renderer.setPixelRatio(window.devicePixelRatio > 1 ? 2 : 1);
-renderer.setSize(window.innerWidth, window.innerHeight);
-renderer.setPixelRatio(window.devicePixelRatio > 1 ? 2 : 1);
-renderer.shadowMap.enabled = true;
-renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
-// Scene
-const scene = new Scene();
-scene.background = new THREE.Color('#49B0F5');
 
-// Helper
-const axesHelper = new THREE.AxesHelper(3);
-scene.add(axesHelper);
 
-const gridHelper  = new THREE.GridHelper(5);
-scene.add(gridHelper);
 
-// Camera
-const camera = new THREE.PerspectiveCamera(
-    75,
-    window.innerWidth / window.innerHeight,
-    0.1,
-    1000
-);
-camera.position.x = 4;
-camera.position.y = 20;
-camera.position.z = 30;
-scene.add(camera);
+
+
 
 
 // Light
@@ -94,48 +62,40 @@ scene.add(ambientLight);
 // ===========MESHES
 
 // Floor
-const floorHeight = 1;
-const floorWidth = 10000;
-const floorDepth = 10000;
-const floorPositionX = 0;
-const floorPositionY = 0;
-const floorPositionZ = 0;
 
-const marbleTexture = textureLoader.load('./image/marble-640.jpg');
-marbleTexture.wrapS = THREE.RepeatWrapping;
-marbleTexture.wrapT = THREE.RepeatWrapping;
-marbleTexture.repeat.set(floorWidth/20, floorDepth/20); // 스케일 조절 (반복 수)
 
-const floorGeometry = new BoxGeometry(floorWidth, floorHeight, floorDepth);
-const floorMaterial = new MeshPhongMaterial({
-    map:marbleTexture,
-    color: 0xffffff, // 바닥 기본 색상
-    shininess: 10, // 빛을 반사하는 정도 (조절 가능)
-    reflectivity: 0.3, // 빛을 얼마나 반사할지 (조절 가능)
-});
-const floorMesh = new Mesh(floorGeometry, floorMaterial);
-floorMesh.position.set(floorPositionX, floorPositionY, floorPositionZ);
-scene.add(floorMesh);
+    // ===========MESHES
+    // Floor
+const floor = new Floor();
+floor.cannon();
+
+// const boxShape = new CANNON.Box(new CANNON.Vec3(floorWidth/2, floorHeight/2, floorDepth/2));
+// const boxBody = new CANNON.Body({mass: 1});
+
+// boxBody.addShape(boxShape);
+// boxBody.position.set(floorPositionX,floorPositionY,floorPositionZ);
+// world.addBody(boxBody);
 
 interface wallInterface {
-    height: number,
-    width : number,
-    depth: number,
-    x: number,
-    y: number,
-    z: number
+    height?: number,
+    width?: number,
+    depth?: number,
+    x?: number,
+    z?: number
 }
 function wall(info?: wallInterface){
-    const height = info ? info.height : 50;
-    const width = info ? info.width : 200;
-    const depth = info ? info.depth : 20;
-    const x = info ? info.x : 0;
-    const y = info ? info.y : height/2;
-    const z = info ? info.z : 0;
+    const marbleTexture = textureLoader.load('./image/marble-640.jpg');
+    
+    const height = info?.height ?? 50;
+    const width = info?.width ?? 200;
+    const depth = info?.depth ?? 20;
+    const x =  info?.x ?? 0;
+    const y = height/2;
+    const z = info?.z ?? 0;
 
     const geometry = new BoxGeometry(width, height, depth);
     const material = new MeshPhongMaterial({
-
+        map: marbleTexture,
         color: 0xffffff, // 바닥 기본 색상
         shininess: 10, // 빛을 반사하는 정도 (조절 가능)
         reflectivity: 0.3, // 빛을 얼마나 반사할지 (조절 가능)
@@ -146,7 +106,15 @@ function wall(info?: wallInterface){
     scene.add(mesh);
 }
 
-wall();
+wall({
+    z: -50
+});
+
+wall({
+    z: -100
+});
+
+
 
 
 
@@ -237,7 +205,8 @@ function draw() {
     work(delta);
 
     // cannon-js update
-
+    world.step(1/60);
+    // floorMesh.position.copy(threeVector3FromCannonVec3(boxBody.position));
 
 
     camera.updateMatrix();
@@ -280,6 +249,9 @@ function onMouseMove(event: MouseEvent){
 function onClick(event: MouseEvent){
     event.preventDefault(); // 기존 동작 중지
 
+    
+
+    
     // raycaster update
     raycaster.setFromCamera(mouse, camera);
 

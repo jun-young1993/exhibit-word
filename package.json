@@ -24,10 +24,12 @@
   },
   "dependencies": {
     "@types/dat.gui": "^0.7.11",
+    "@types/events": "^3.0.2",
     "@types/node": "^20.8.9",
     "@types/three": "^0.158.0",
     "cannon-es": "^0.20.0",
     "dat.gui": "^0.7.9",
+    "events": "^3.3.0",
     "three": "^0.158.0",
     "ts-loader": "^9.5.0",
     "webpack-merge": "^5.10.0"

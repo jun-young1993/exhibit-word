@@ -4,7 +4,12 @@
     "moduleResolution": "node",
     "strict": true,
     "allowSyntheticDefaultImports": true,
-    "outDir": "./dist"
+    "outDir": "./dist",
+    "paths": {
+      "utills/*": ["./src/utills/*"],
+      "lib/*": ["./src/lib/*"],
+      "contents/*": ["./src/contents/*"],
+    }
   },
-  "include": ["**/*.ts"] // ts파일 위치
+  "include": ["**/*.ts"],
 }

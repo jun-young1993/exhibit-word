@@ -1,6 +1,8 @@
 const path = require('path');
+const fs = require('fs');
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const CopyWebpackPlugin = require('copy-webpack-plugin');
+
 module.exports = {
     entry: './src/main.ts', // 실행 파일을 main.ts로 설정
     module: {
@@ -14,7 +16,10 @@ module.exports = {
     },
     resolve: {
         alias: {
-            three: path.resolve('./node_modules/three')
+            three: path.resolve('./node_modules/three'),
+            utills: path.resolve('./src/utills'),
+            lib: path.resolve('./src/lib'),
+            contents: path.resolve('./src/contents'),
         },
         extensions: ['.tsx', '.ts', '.js'],
     },
@@ -35,8 +40,6 @@ module.exports = {
                 { from: "./src/main.css", to: "./main.css" },
                 { from: "./src/assets/gltf", to: "./gltf" },
                 { from: "./src/assets/image", to: "./image" },
-                // { from: "./src/models", to: "./models" },
-                // { from: "./src/sounds", to: "./sounds" }
             ],
         })
     ]
