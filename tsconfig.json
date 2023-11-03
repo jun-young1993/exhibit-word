@@ -9,6 +9,7 @@
       "utills/*": ["./src/utills/*"],
       "lib/*": ["./src/lib/*"],
       "contents/*": ["./src/contents/*"],
+      "interfaces/*": ["./src/interfaces/*"]
     }
   },
   "include": ["**/*.ts"],

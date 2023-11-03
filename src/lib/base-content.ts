@@ -1,82 +1,68 @@
 
 
 import EventEmitter from "events";
-import { Camera, Geometry, Mesh, Renderer, Scene, World, camera, renderer, scene, world } from "./common";
-import { BufferGeometry } from "three";
+import { Camera, Mesh, Renderer, Scene, World, camera, renderer, scene, world, event as ExibitEvent } from "./common";
+import {EventNames} from "interfaces/content-parameter.interface";
+import {Vec3, Box, Body} from 'cannon-es'
+import {threeVector3FromCannonVec3} from "utills/convert";
 
-export interface BaseContentInterface {
-	readonly world: World,
-	readonly scene: Scene,
-	readonly camera: Camera,
-	readonly renderer: Renderer,
-	createMesh(): Mesh
-	
-}
+
+
+
+
+
 export default class BaseContent {
 	readonly world: World = world;
 	readonly scene: Scene = scene;
 	readonly camera: Camera = camera;
 	readonly renderer: Renderer = renderer;
-	readonly event: EventEmitter = new EventEmitter();
-	private mesh!: Mesh;
+	readonly event: EventEmitter = ExibitEvent;
+	protected body!: Body;
+
 	constructor() {
-		this.setSceen();
-		
+
 	}
-	
-	createMesh(): Mesh 
+
+
+	protected cannon(
+		box:Vec3,
+		body: {
+			mass: number,
+			position: Vec3
+		},
+		mesh: Mesh
+	){
+		const boxShape = new Box(
+			box
+		);
+		body.mass *= 10000;
+		this.body = new Body(body);
+		this.body.addShape(boxShape);
+
+		this.world.addBody(this.body);
+
+		this.animationLoop(() => {
+			// console.log(this.body.position);
+			mesh.position.copy(threeVector3FromCannonVec3(this.body.position));
+			// @ts-ignore
+			mesh.quaternion.copy(this.body.quaternion);
+		})
+
+	}
+
+	protected setScene(mesh: Mesh): void
 	{
-		throw new Error("CreateMesh Method not implemented.");
+		this.scene.add(mesh);
 	}
 
-	public getMesh(): Mesh
-	{	
-		if(!this.mesh){
-			this.mesh = this.createMesh();
-		}
-
-		return this.mesh;
-	}
-
-	private getMeshPositon(){
-		return this.getMesh().position;
-	}
-
-	private getGeometry()
-	{
-		return this.getMesh().geometry;
-	}
-
-	private getGeometryParameter(){
-		return this.getGeometry().parameter;
-	}
-
-	public cannon(){
-		console.log(this.mesh);
-		const meshPosition = this.getGeometry();
-		const x = meshPosition.x;
-		const y = meshPosition.y;
-		const z = meshPosition.z;
-		const boxShape = new CANNON.Box(new CANNON.Vec3(floorWidth/2, floorHeight/2, floorDepth/2));
-		// const boxBody = new CANNON.Body({mass: 1});
-
-		// boxBody.addShape(boxShape);
-		// boxBody.position.set(floorPositionX,floorPositionY,floorPositionZ);
-		// world.addBody(boxBody);
-	}
-
-	private setSceen(): void
-	{	
-		this.scene.add(this.getMesh());
+	public animationLoop(callback: (delta: number, time: number) => void){
+		this.event.on(EventNames.AnimationLoop,callback)
 	}
 
 
-	private emit(eventName: string | symbol, ...args: any[]): void
-	{
-		if(!this.event.emit(eventName,args)){
-			throw new Error(`Event emission failed for event: ${eventName.toString()}`);
-		};
-	}
+
+
+
 
 
 }

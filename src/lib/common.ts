@@ -1,13 +1,14 @@
 import * as CANNON from 'cannon-es';
 import EventEmitter from 'events';
-import { Color, 
-	 PCFSoftShadowMap, 
-	 PerspectiveCamera as ThreePerspectiveCamera, 
-	 Scene as ThreeScene, 
-	 TextureLoader, 
-	 WebGLRenderer as ThreeWebGLRenderer,
-	 BoxGeometry as ThreeBoxGeometry,
-	 Mesh as ThreeMesh
+import {
+	Color,
+	PCFSoftShadowMap,
+	PerspectiveCamera as ThreePerspectiveCamera,
+	Scene as ThreeScene,
+	TextureLoader,
+	WebGLRenderer as ThreeWebGLRenderer,
+	BoxGeometry as ThreeBoxGeometry,
+	Mesh as ThreeMesh, Vector2
 } from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 
@@ -57,14 +58,14 @@ export type Mesh = ThreeMesh;
 
 
 export const initialValue = function(){
-	world.gravity.set(0, -9.81, 0); 
+	world.gravity.set(0, -9.81, 0);
 
 	scene.background = new Color('#49B0F5');
 	scene.add(camera);
 	
-	camera.position.x = 4;
-	camera.position.y = 20;
-	camera.position.z = 30;
+	camera.position.x = -100;
+	camera.position.y = 10;
+	camera.position.z = 400;
 	
 	renderer.setSize(window.innerWidth, window.innerHeight);
 	renderer.setPixelRatio(window.devicePixelRatio > 1 ? 2 : 1);
@@ -72,5 +73,7 @@ export const initialValue = function(){
 	renderer.shadowMap.type = PCFSoftShadowMap;
 }
 
+export const event: EventEmitter = new EventEmitter();
 
+export const mouse =  new Vector2();;
 

@@ -20,6 +20,7 @@ module.exports = {
             utills: path.resolve('./src/utills'),
             lib: path.resolve('./src/lib'),
             contents: path.resolve('./src/contents'),
+            interfaces: path.resolve('./src/interfaces'),
         },
         extensions: ['.tsx', '.ts', '.js'],
     },
