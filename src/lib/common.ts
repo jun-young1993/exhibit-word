@@ -8,7 +8,7 @@ import {
 	TextureLoader,
 	WebGLRenderer as ThreeWebGLRenderer,
 	BoxGeometry as ThreeBoxGeometry,
-	Mesh as ThreeMesh, Vector2
+	Mesh as ThreeMesh, Vector2, Raycaster
 } from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 
@@ -75,5 +75,6 @@ export const initialValue = function(){
 
 export const event: EventEmitter = new EventEmitter();
 
-export const mouse =  new Vector2();;
+export const mouse =  new Vector2();
+export const raycaster = new Raycaster();
 

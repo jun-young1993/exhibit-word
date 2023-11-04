@@ -90,7 +90,7 @@ const player = new Player();
 
 // const wall = new Wall();
 
-const canvas1 = gltfLoader.load(
+gltfLoader.load(
     './gltf/exhibit.glb',
     glb => {
         const mesh = glb.scene.children[0];

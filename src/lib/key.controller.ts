@@ -12,11 +12,9 @@ export default class KeyController {
 
             if(KeyController.toggles[code] === undefined){
                 KeyController.toggles[code] = true;
+            }else if(KeyController.toggles[code] === true){
+                KeyController.deleteToggle(code);
             }
-            if(KeyController.toggles[code] === true){
-                delete KeyController.toggles[code];
-            }
-
         })
 
         window.addEventListener('keyup',({code}) => {
@@ -32,8 +30,17 @@ export default class KeyController {
         return KeyController.instance;
     }
 
+    public static deleteToggle(code: string): void
+    {
+        delete KeyController.toggles[code];
+    }
+
     public static getKeys(): Record<string, boolean>
     {
         return KeyController.keys;
     }
+
+    public static getToggle(code: string): boolean{
+        return KeyController.toggles[code] === undefined ? false : true;
+    };
 }
