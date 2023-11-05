@@ -1,5 +1,5 @@
 import Content from "lib/content";
-import {BoxGeometry, Mesh, MeshPhongMaterial, Raycaster, Vector3} from "three";
+import {BoxGeometry, Mesh, MeshPhongMaterial, Raycaster, Vector2, Vector3} from "three";
 import {camera, event as ExibitEvent, mouse, renderer, scene} from "lib/common";
 import KeyController from "lib/key.controller";
 import {PointerLockControls} from "three/examples/jsm/controls/PointerLockControls";
@@ -8,6 +8,7 @@ import {cannonVec3FromThreeVector3, threeVector3FromCannonVec3} from "utills/con
 import {Vec3} from "cannon-es";
 import CrossHairItem from "contents/items/cross-hair.item";
 import Swap from "contents/items/swap";
+import Menu from "contents/items/menu";
 // import {Mesh} from "lib/common";
 
 class CrossHair extends Mesh {
@@ -22,13 +23,15 @@ class CrossHair extends Mesh {
         this.position.z = -2;
         this.move();
         this.click();
-        camera.add(this);
+        camera.add(this as Mesh);
+
+
     }
 
     move(){
         document.addEventListener('mousemove', (e:MouseEvent) => {
             e.preventDefault();
-
+            console.log(mouse.x, mouse.y);
             mouse.x = this.position.x;
             mouse.y = this.position.y;
             this.raycaster.setFromCamera(mouse,camera);
@@ -53,32 +56,7 @@ class CrossHair extends Mesh {
                     continue;
                 }
 
-                console.log('clicked point', intersect.point);
-
-
-                // // 새로운 객체 생성
-                // const newObjectGeometry = new THREE.BoxGeometry(10, 10, 10); // 예시로 상자 모양 객체를 생성
-                // const newObjectMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 }); // 예시로 빨간색 재질 사용
-                // const newObject = new THREE.Mesh(newObjectGeometry, newObjectMaterial);
-                //
-                //
-                //
-                // // 새로운 객체의 위치를 클릭한 오브젝트 앞쪽으로 조정
-                // const distance = 20; // 조정할 거리 (원하는 위치에 따라 조절)
-                //
-                // newObject.position.set(
-                //     intersect.point.x,
-                //     intersect.point.y,
-                //     intersect.point.z + 10
-                // );
-                //
-                // // 씬에 새로운 객체를 추가
-                // scene.add(newObject);
-
-                // 필요에 따라 새로운 객체를 회전 또는 크기를 조정할 수 있습니다.
-                // newObject.rotation.set(0, 0, 0); // 회전 설정
-                // newObject.scale.set(1, 1, 1); // 크기 설정
-                // console.log(clickedObject.name);
+                console.log('clicked point', intersect.object);
                 break;
             }
 
@@ -89,8 +67,10 @@ class CrossHair extends Mesh {
 
 export default class Player extends Content {
     private controls: PointerLockControls = new PointerLockControls(camera, renderer.domElement);
-    private items: Swap = new Swap();
+    // private items: Swap = new Swap();
+    private crossHair: CrossHair = new CrossHair();
     private moveSpeed: number = 100;
+    private menu!: Menu;
     constructor() {
         super({
             height: 50,
@@ -103,9 +83,10 @@ export default class Player extends Content {
         this.playerControls();
 
         this.move()
-
+        this.menu = new Menu();
 
     }
+
 
     playerControls(){
 
@@ -118,8 +99,11 @@ export default class Player extends Content {
 
     move(){
         this.animationLoop((delta) => {
+
+
             const deltaMoveSpeed = this.moveSpeed  * delta;
             const keys = KeyController.getKeys();
+
 
 
             if(keys['KeyW'] === true || keys['ArrowUp'] === true){

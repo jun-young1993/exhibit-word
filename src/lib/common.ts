@@ -63,7 +63,7 @@ export const initialValue = function(){
 	scene.background = new Color('#49B0F5');
 	scene.add(camera);
 	
-	camera.position.x = -100;
+	camera.position.x = -300;
 	camera.position.y = 10;
 	camera.position.z = 400;
 	

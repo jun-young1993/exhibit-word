@@ -3,6 +3,7 @@ import Item, {ItemOptions} from "contents/items/item";
 import {Box3, BoxGeometry, FrontSide, Mesh, MeshBasicMaterial, Object3D, Object3DEventMap, Vector3} from "three";
 import {gltfLoader, scene, textureLoader} from "lib/common";
 import upload from "lib/upload";
+import { itemClient } from "lib/clients";
 
 
 export default class BoxItem extends Item {
@@ -17,6 +18,12 @@ export default class BoxItem extends Item {
             new MeshBasicMaterial({ color: 0x00ff00, wireframe: true }),
             options
         );
+
+        const box = new Box3();
+        this.geometry.computeBoundingBox();
+        if (this.geometry.boundingBox instanceof Box3) {
+            box.copy(this.geometry.boundingBox).applyMatrix4(this.matrixWorld);
+        }
 
         this.sizeEvent();
     }
@@ -44,7 +51,7 @@ export default class BoxItem extends Item {
                 intersect.point.z  + (diff)
             );
 
-            scene.add(this);
+            scene.add(this as Mesh);
 
         }
 
@@ -84,7 +91,7 @@ export default class BoxItem extends Item {
         if(code === 'KeyP'){
             this.rotation.y -= 0.1;
         }
-
+        this.geometry.computeBoundingBox();
 
 
         // if(code === 'Comma'){
@@ -97,8 +104,17 @@ export default class BoxItem extends Item {
 
 
         if(code === 'KeyM') {
+            itemClient.post(this)
+              .then((resolve) => {
+                  const {status, body} = resolve;
+                  console.log(resolve);
+                console.log(status, body);
+              })
+              .catch((reject) => {
 
-            const boundingBox = new Box3().setFromObject(this);
+              });
+            return;
+            const boundingBox = new Box3().setFromObject(this as Mesh);
 
 
 
@@ -160,6 +176,7 @@ export default class BoxItem extends Item {
         // scene.add(box);
 
     }
+
 
 
 

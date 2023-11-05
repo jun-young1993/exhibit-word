@@ -38,20 +38,8 @@ import Wall from "contents/wall";
 
 
 const isDev = true;
-const datGui = new dat.GUI();
-const dotGuiAdd = function (object:object,name:string) : void
-{
 
-    if(isDev) {
-        // @ts-ignore
-        datGui.add(object, "x", -1000, 1000, 0.1).name(name + ' x');
-        // @ts-ignore
-        datGui.add(object, "y", -1000, 1000, 0.1).name(name + ' y');
-        // @ts-ignores
-        datGui.add(object, "z", -1000, 1000, 0.1).name(name + ' z');
 
-    }
-}
 
 boot();
 
