@@ -35,6 +35,7 @@ import Floor from 'contents/floor';
 import Player from "contents/player";
 import boot from "utills/boot";
 import Wall from "contents/wall";
+import events from 'utills/events';
 
 
 const isDev = true;
@@ -195,3 +196,5 @@ function animationLoop(){
     renderer.setAnimationLoop(animationLoop);
 }
 animationLoop();
+
+events();
