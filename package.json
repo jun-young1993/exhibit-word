@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "scripts": {
     "build": "webpack --config ./etc/webpack.prod.js",
-    "dev": "webpack serve --progress --config ./etc/webpack.dev.js",
+    "start:dev": "webpack serve --progress --config ./etc/webpack.dev.js",
     "start": "node ./dist/server/server.js"
   },
   "devDependencies": {
