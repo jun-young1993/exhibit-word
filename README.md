@@ -13,6 +13,9 @@ https://codepen.io/Lirys/pen/VweBYRZ
 https://github.com/furnishup/blueprint3d
 
 
+// threejs 모든 예제 참고용 
+https://threejs.org/editor/
+
 참고
 
 // 매쉬 컨트롤 용
@@ -23,8 +26,8 @@ https://github.com/furnishup/blueprint3d
 
 // youtube
 
-
-// interractive / voxelpainter
+// 매쉬 생성전 미리 보기용 ( 빨간색으로 임시 이미지 )
+// interactive / voxelpainter
 
 // loader / texture / lottie
 
