@@ -8,26 +8,22 @@
     <link rel="stylesheet" href="./main.css">
 </head>
 <body>
-<canvas id="three-canvas"></canvas>
-<div class="menu-icon" id="menuIcon">
-    <div class="bar"></div>
-    <div class="bar"></div>
-    <div class="bar"></div>
-</div>
-<nav class="menu" id="menu">
-    <button class="close-button" id="closeButton">Close</button>
-    <ul>
-        <li>
-            <a href="#" id="menu1">메뉴 항목 1</a>
-            <ul class="sub-menu" id="menu1-sub">
-                <li><a href="#">하위 메뉴 1</a></li>
-                <li><a href="#">하위 메뉴 2</a></li>
-                <li><a href="#">하위 메뉴 3</a></li>
-            </ul>
-        </li>
-        <li><a href="#">메뉴 항목 2</a></li>
-        <li><a href="#">메뉴 항목 3</a></li>
-    </ul>
-</nav>
+    <canvas id="three-canvas"></canvas>
+    <div id="modal-container" class="modal-container">
+        <header class="modal-header">
+            <button id="geometry-list-button" class="modal-button" data-type="ui" data-category="item-list" data-subcategory="geometry" >Geometry</button>
+            <button id="material-list-button" class="modal-button" data-type="ui" data-category="item-list" data-subcategory="material" >Material</button>
+        </header>
+        <main id="item-list" class="item-grid">
+<!--            <div class="item-box">-->
+<!--                <img src="http://localhost:8080/image/test.png" class="item-img" />-->
+<!--                <div class="item-text">Box</div>-->
+<!--            </div>-->
+        </main>
+        <footer class="modal-footer">
+            <button id="item-apply-button" class="modal-button" data-type="UI">apply</button>
+            <button id="item-cancel-button" class="modal-button" data-type="UI">cancel</button>
+        </footer>
+    </div>
 </body>
 </html>

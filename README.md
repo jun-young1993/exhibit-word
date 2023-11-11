@@ -29,8 +29,10 @@ https://threejs.org/editor/
 // 매쉬 생성전 미리 보기용 ( 빨간색으로 임시 이미지 )
 // interactive / voxelpainter
 
+//  글자 로딩바
 // loader / texture / lottie
 
+// 객체 움직이기
 // shadowmap / progressive
 
 // 큐브 포착 레이케스터
