@@ -13,6 +13,12 @@ import {
 import {CSS3DObject, CSS3DRenderer} from "three/examples/jsm/renderers/CSS3DRenderer";
 import dat from 'dat.gui';
 import {TransformControls} from "three/examples/jsm/controls/TransformControls";
+import MeshInfo from "lib/mesh-info";
+import {meshClient} from "lib/clients";
+import {constants} from "http2";
+import MeshBulk from "../entities/mesh-bulk";
+
+
 
 
 
@@ -111,6 +117,8 @@ export default class Editor {
 
         this.addEvents();
 
+
+        this.findAll();
         // this.item();
 
         this.createInventoryModal();
@@ -303,7 +311,50 @@ export default class Editor {
             case 'Escape':
                 this.transformControls.reset();
                 break;
+            case 'Enter':
+                this.itemApply();
+                break;
 
+        }
+    }
+
+    private findAll() {
+        meshClient.findAll()
+        .then((meshBulkInterfaces) => {
+
+            meshBulkInterfaces.forEach((meshBulkInterface) => {
+                console.log(new MeshBulk(meshBulkInterface).mesh());
+                this.scene.add(
+                    new MeshBulk(meshBulkInterface).mesh()
+                )
+            })
+
+            // this.scene.add(mesh);
+        });
+
+    }
+
+    private async itemApply() {
+
+        if (this.editing) {
+
+            const create = await meshClient.createBulk(this.editing);
+            if(create.status === 201){
+                const clone = this.editing.clone();
+                this.objects.push(clone);
+                this.scene.add(clone);
+                this.removeEditing();
+            }
+
+        }
+
+    }
+
+    private removeEditing(): void
+    {
+        if(this.editing){
+            this.transformControls.detach();
+            this.scene.remove(this.editing);
         }
     }
 
@@ -328,6 +379,11 @@ export default class Editor {
                                         case 'geometry':
                                             break;
                                         case 'material':
+                                            break;
+                                        case 'apply':
+                                            this.itemApply();
+                                            break;
+                                        case 'cancel':
                                             break;
                                     }
                                 break;
@@ -392,11 +448,7 @@ export default class Editor {
                         geometry,
                         new MeshBasicMaterial()
                     )
-                    if(this.editing){
-                        this.transformControls.detach();
-                        this.scene.remove(this.editing);
-
-                    }
+                    this.removeEditing();
 
                     this.editing = mesh;
                     this.transformControls.attach(this.editing);
@@ -406,6 +458,8 @@ export default class Editor {
             }
 
         }
+
+
 
 
         // this.pointer?.set( ( event.clientX / window.innerWidth ) * 2 - 1, - ( event.clientY / window.innerHeight ) * 2 + 1 );
