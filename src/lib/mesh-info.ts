@@ -1,4 +1,4 @@
-import {Box3, BoxGeometry, Mesh, Object3DEventMap, Vector3} from "three";
+import {Box3, BoxGeometry, Material, Mesh, MeshBasicMaterial, Object3DEventMap, Vector3} from "three";
 
 
 
@@ -18,6 +18,9 @@ export default class MeshInfo {
     private quaternionW: number;
     private materialType: string;
     private geometryType: string;
+    private materialColor: string = '#ffffff';
+    private materialOpacity: number = 1;
+    private materialMap: string | null = null;
     constructor(mesh: Mesh) {
         const {
             rotation : {x: rotationX , y: rotationY ,z: rotationZ},
@@ -47,6 +50,17 @@ export default class MeshInfo {
         this.materialType = mesh.material.constructor.name;
         this.geometryType = mesh.geometry.constructor.name;
 
+        
+        
+        if(mesh.material instanceof MeshBasicMaterial){
+            this.materialColor = `#${mesh.material.color.getHexString()?? 'ffffff'}`;
+            this.materialOpacity = mesh.material.opacity;
+            // this.materialMap = mesh.material.map;
+            // console.log(mesh.material.map);
+        }
+        
+        
+
     }
 
     getJson(){
@@ -65,8 +79,8 @@ export default class MeshInfo {
             },
             material: {
                 type: this.materialType,
-                color: null,
-                opacity: null,
+                color: this.materialColor,
+                opacity: this.materialOpacity,
                 map: null
             },
             geometry: {

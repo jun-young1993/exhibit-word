@@ -1,4 +1,4 @@
-import {BoxGeometry, Mesh, MeshBasicMaterial} from "three";
+import {BoxGeometry, Mesh, MeshBasicMaterial, SphereGeometry} from "three";
 import id from "ajv/lib/vocabularies/core/id";
 import {BufferGeometry} from "three/src/core/BufferGeometry";
 
@@ -75,6 +75,7 @@ export default class MeshBulk {
     {
         const bulkGeometry = this.meshBulk.geometry;
         let geometry = null;
+        console.log(bulkGeometry);
         switch(bulkGeometry.type){
             case BoxGeometry.name:
                 geometry = new BoxGeometry(
@@ -82,6 +83,11 @@ export default class MeshBulk {
                     bulkGeometry.height,
                     bulkGeometry.depth
                 );
+                break;
+            case SphereGeometry.name:
+                    geometry = new SphereGeometry(
+                        bulkGeometry.radius
+                    )
                 break;
         }
         if(geometry === null){

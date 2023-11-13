@@ -3,6 +3,7 @@ import {
     AmbientLight, AxesHelper, Box3, BoxGeometry,
     Color, CylinderGeometry,
     GridHelper, IcosahedronGeometry,
+    Material,
     Mesh, MeshBasicMaterial, Object3DEventMap, OctahedronGeometry,
     PerspectiveCamera,
     PlaneGeometry,
@@ -20,8 +21,22 @@ import MeshBulk from "../entities/mesh-bulk";
 
 
 
+export interface UiButtonInterface {
+    geometry_list : HTMLDivElement
+}
+export interface UiBodyInterface {
+    geometry_list: HTMLElement
+    material_list: HTMLElement
+}
 
-
+export interface UiItemInterface {
+    material_color: HTMLInputElement
+}
+export interface UiInterface {
+    button : UiButtonInterface
+    body: UiBodyInterface
+    item: UiItemInterface
+}
 export default class Editor {
     private readonly canvas!: HTMLCanvasElement;
     private modalContainer!: HTMLDivElement;
@@ -39,6 +54,7 @@ export default class Editor {
     private axesHelper: AxesHelper;
     // private datGui: dat.GUI;
     private transformControls: TransformControls;
+    private ui: UiInterface;
     constructor() {
         this.canvas = document.querySelector('#three-canvas') as HTMLCanvasElement;
         this.modalContainer = document.querySelector('#modal-container') as HTMLDivElement;
@@ -60,7 +76,26 @@ export default class Editor {
         // this.datGui = new dat.GUI();
 
         this.transformControls = new TransformControls(this.camera, this.renderer.domElement);
-
+        this.ui = {
+            button: {
+                geometry_list: document.getElementById('geometry-list-button') as HTMLDivElement
+            },
+            body: {
+                geometry_list: document.getElementById('geometry-list') as HTMLElement,
+                material_list: document.getElementById('material-list') as HTMLElement
+            },
+            item: {
+                material_color: document.getElementById('material-color') as HTMLInputElement
+            }
+        }
+        this.ui.item.material_color.addEventListener('input',() => {
+            if (this.editing) {
+                    // @ts-ignore
+                    this.editing.material.color.set(this.ui.item.material_color.value)
+            
+            }
+            
+        })
     }
 
     public initialize(){
@@ -216,9 +251,10 @@ export default class Editor {
                 name : 'Text'
             }
         ];
-        const itemList = document.getElementById('item-list') as HTMLDivElement;
+        
+        this.ui.body.geometry_list.className = "geometry-grid active";
         geometryItems.forEach((geometryItem) => {
-            itemList.appendChild(this.item(geometryItem));
+            this.ui.body.geometry_list.appendChild(this.item(geometryItem));
         });
     }
 
@@ -321,7 +357,7 @@ export default class Editor {
     private findAll() {
         meshClient.findAll()
         .then((meshBulkInterfaces) => {
-
+            console.log(meshBulkInterfaces);
             meshBulkInterfaces.forEach((meshBulkInterface) => {
                 console.log(new MeshBulk(meshBulkInterface).mesh());
                 this.scene.add(
@@ -375,10 +411,15 @@ export default class Editor {
                 case 'ui':
                         switch (category){
                             case 'item-list':
+                                
                                     switch (subCategory){
                                         case 'geometry':
+                                            this.ui.body.geometry_list.className = "geometry-grid active";
+                                            this.ui.body.material_list.className = "material-list";
                                             break;
                                         case 'material':
+                                            this.ui.body.geometry_list.className = "geometry-grid";
+                                            this.ui.body.material_list.className = "material-list active";
                                             break;
                                         case 'apply':
                                             this.itemApply();
@@ -452,7 +493,7 @@ export default class Editor {
 
                     this.editing = mesh;
                     this.transformControls.attach(this.editing);
-
+                    this.ui.item.material_color.value = '#ffffff';
                     this.scene.add(this.editing);
                 }
             }
@@ -540,6 +581,8 @@ export default class Editor {
         if(this.renderer){
             this.renderer.setAnimationLoop(this.setAnimationLoop);
         }
+
+        
 	
     }
 }

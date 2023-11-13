@@ -14,11 +14,24 @@
             <button id="geometry-list-button" class="modal-button" data-type="ui" data-category="item-list" data-subcategory="geometry" >Geometry</button>
             <button id="material-list-button" class="modal-button" data-type="ui" data-category="item-list" data-subcategory="material" >Material</button>
         </header>
-        <main id="item-list" class="item-grid">
+        <main id="geometry-list" class="geometry-grid">
 <!--            <div class="item-box">-->
 <!--                <img src="http://localhost:8080/image/test.png" class="item-img" />-->
 <!--                <div class="item-text">Box</div>-->
 <!--            </div>-->
+        </main>
+        <main id="material-list" class="material-list">
+            <div>
+                <label for="material-color">color&nbsp;&nbsp;&nbsp;</label>
+
+                <input type="color" id="material-color" value="#ffffff"/>
+            </div>
+            <div>
+                <label for="material-opacity">opacity</label>
+            </div>
+            <div>
+                <input type="range" id="material-opacity" min="0" max="100" value="1" step="0.1" >
+            </div>
         </main>
         <footer class="modal-footer">
             <button id="item-apply-button" class="modal-button" data-type="ui" data-category="item-list" data-subcategory="apply">apply</button>
