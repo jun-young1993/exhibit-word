@@ -9,7 +9,7 @@ import {
     PlaneGeometry,
     Raycaster, RingGeometry,
     Scene, SphereGeometry,
-    SpotLight, TetrahedronGeometry, TorusKnotGeometry, TubeGeometry, Vector2, WebGLRenderer
+    SpotLight, TetrahedronGeometry, TextureLoader, TorusKnotGeometry, TubeGeometry, Vector2, WebGLRenderer
 } from "three";
 import {CSS3DObject, CSS3DRenderer} from "three/examples/jsm/renderers/CSS3DRenderer";
 import dat from 'dat.gui';
@@ -27,10 +27,12 @@ export interface UiButtonInterface {
 export interface UiBodyInterface {
     geometry_list: HTMLElement
     material_list: HTMLElement
+    texture_list: HTMLDivElement
 }
 
 export interface UiItemInterface {
     material_color: HTMLInputElement
+    material_opacity: HTMLInputElement
 }
 export interface UiInterface {
     button : UiButtonInterface
@@ -55,6 +57,7 @@ export default class Editor {
     // private datGui: dat.GUI;
     private transformControls: TransformControls;
     private ui: UiInterface;
+    private textureLoader:TextureLoader =  new TextureLoader();
     constructor() {
         this.canvas = document.querySelector('#three-canvas') as HTMLCanvasElement;
         this.modalContainer = document.querySelector('#modal-container') as HTMLDivElement;
@@ -82,20 +85,32 @@ export default class Editor {
             },
             body: {
                 geometry_list: document.getElementById('geometry-list') as HTMLElement,
-                material_list: document.getElementById('material-list') as HTMLElement
+                material_list: document.getElementById('material-list') as HTMLElement,
+                texture_list: document.getElementById('texture-list') as HTMLDivElement
             },
             item: {
-                material_color: document.getElementById('material-color') as HTMLInputElement
+                material_color: document.getElementById('material-color') as HTMLInputElement,
+                material_opacity: document.getElementById('material-opacity') as HTMLInputElement
             }
         }
         this.ui.item.material_color.addEventListener('input',() => {
-            if (this.editing) {
-                    // @ts-ignore
+            if (this.editing && this.editing.material instanceof MeshBasicMaterial) {
+
                     this.editing.material.color.set(this.ui.item.material_color.value)
             
             }
             
         })
+
+        this.ui.item.material_opacity.addEventListener('input',()=>{
+            if(this.editing && this.editing.material instanceof MeshBasicMaterial){
+
+                this.editing.material.opacity = parseFloat(this.ui.item.material_opacity.value);
+                this.editing.material.needsUpdate = true;
+            }
+        })
+
+
     }
 
     public initialize(){
@@ -203,59 +218,79 @@ export default class Editor {
         const geometryItems = [
             {
                 type : 'geometry',
-                name : 'Box'
-            },{
-                type : 'geometry',
-                name : 'Sphere'
-            },{
-                type : 'geometry',
-                name : 'Cylinder'
-            },{
-                type : 'geometry',
-                name : 'Plane'
-            },
-            {
-                type : 'geometry',
-                name : 'TorusKnot'
-            },
-            {
-                type : 'geometry',
-                name : 'Cone'
-            },
-            {
-                type : 'geometry',
-                name : 'Dodecahedron'
-            },
-            {
-                type : 'geometry',
-                name : 'Octahedron'
-            },
-            {
-                type : 'geometry',
-                name : 'Icosahedron'
-            },
-            {
-                type : 'geometry',
-                name : 'Tetrahedron'
-            },
-            {
-                type : 'geometry',
-                name : 'Ring'
-            },
-            {
-                type : 'geometry',
-                name : 'Tube'
-            },
-            {
-                type : 'geometry',
-                name : 'Text'
+                name : 'Box',
+                path: "./image/test.png"
             }
+            // ,{
+            //     type : 'geometry',
+            //     name : 'Sphere'
+            // },{
+            //     type : 'geometry',
+            //     name : 'Cylinder'
+            // },{
+            //     type : 'geometry',
+            //     name : 'Plane'
+            // },
+            // {
+            //     type : 'geometry',
+            //     name : 'TorusKnot'
+            // },
+            // {
+            //     type : 'geometry',
+            //     name : 'Cone'
+            // },
+            // {
+            //     type : 'geometry',
+            //     name : 'Dodecahedron'
+            // },
+            // {
+            //     type : 'geometry',
+            //     name : 'Octahedron'
+            // },
+            // {
+            //     type : 'geometry',
+            //     name : 'Icosahedron'
+            // },
+            // {
+            //     type : 'geometry',
+            //     name : 'Tetrahedron'
+            // },
+            // {
+            //     type : 'geometry',
+            //     name : 'Ring'
+            // },
+            // {
+            //     type : 'geometry',
+            //     name : 'Tube'
+            // },
+            // {
+            //     type : 'geometry',
+            //     name : 'Text'
+            // }
         ];
         
-        this.ui.body.geometry_list.className = "geometry-grid active";
+        this.ui.body.geometry_list.className = "item-grid active";
         geometryItems.forEach((geometryItem) => {
             this.ui.body.geometry_list.appendChild(this.item(geometryItem));
         });
+
+        const textureItems = [{
+            type: 'texture',
+            name: 'cement',
+            path: './image/cement.jpg'
+        },{
+            type: 'texture',
+            name: 'granite-sleek-surface',
+            path: './image/granite-sleek-surface.jpg'
+        },{
+            type: 'texture',
+            name: 'marble',
+            path: './image/marble-640.jpg'
+        }];
+        textureItems.forEach((textureItem) => {
+            this.ui.body.texture_list.appendChild(this.item(textureItem));
+        })
+
     }
 
     private item(item: object) {
@@ -265,7 +300,8 @@ export default class Editor {
         const itemImage = document.createElement('img');
         itemImage.className = 'item-img';
         itemImage.alt = '아이템 이미지';
-        itemImage.src = "./image/test.png";
+        // @ts-ignore
+        itemImage.src = item.path;
 
 
         // @ts-ignore
@@ -345,7 +381,7 @@ export default class Editor {
                 this.transformControls.setMode( 'scale' );
                 break;
             case 'Escape':
-                this.transformControls.reset();
+                this.removeEditing();
                 break;
             case 'Enter':
                 this.itemApply();
@@ -357,9 +393,9 @@ export default class Editor {
     private findAll() {
         meshClient.findAll()
         .then((meshBulkInterfaces) => {
-            console.log(meshBulkInterfaces);
+
             meshBulkInterfaces.forEach((meshBulkInterface) => {
-                console.log(new MeshBulk(meshBulkInterface).mesh());
+
                 this.scene.add(
                     new MeshBulk(meshBulkInterface).mesh()
                 )
@@ -411,20 +447,22 @@ export default class Editor {
                 case 'ui':
                         switch (category){
                             case 'item-list':
-                                
                                     switch (subCategory){
                                         case 'geometry':
-                                            this.ui.body.geometry_list.className = "geometry-grid active";
-                                            this.ui.body.material_list.className = "material-list";
+                                            this.ui.body.geometry_list.className = "item-grid active";
+                                            this.ui.body.material_list.className = "item-list";
                                             break;
                                         case 'material':
-                                            this.ui.body.geometry_list.className = "geometry-grid";
-                                            this.ui.body.material_list.className = "material-list active";
+                                            this.ui.body.geometry_list.className = "item-grid";
+                                            this.ui.body.material_list.className = "item-list active";
                                             break;
                                         case 'apply':
                                             this.itemApply();
                                             break;
                                         case 'cancel':
+
+                                            this.removeEditing();
+
                                             break;
                                     }
                                 break;
@@ -495,6 +533,25 @@ export default class Editor {
                     this.transformControls.attach(this.editing);
                     this.ui.item.material_color.value = '#ffffff';
                     this.scene.add(this.editing);
+                }
+            }
+            if(type === 'texture'){
+
+
+                if(this.editing && this.editing.material){
+                    // @ts-ignore
+
+
+                    // 이미지 소스를 텍스처로 로드
+                    const texture = this.textureLoader.load(imageElement.src);
+
+                    // 텍스처를 메테리얼의 맵에 할당
+                    // @ts-ignore
+                    this.editing.material.map = texture;
+
+                    // 텍스처 변경을 적용하기 위해 업데이트
+                    // @ts-ignore
+                    this.editing.material.needsUpdate = true;
                 }
             }
 

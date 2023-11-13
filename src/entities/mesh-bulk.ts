@@ -75,7 +75,7 @@ export default class MeshBulk {
     {
         const bulkGeometry = this.meshBulk.geometry;
         let geometry = null;
-        console.log(bulkGeometry);
+
         switch(bulkGeometry.type){
             case BoxGeometry.name:
                 geometry = new BoxGeometry(
@@ -100,6 +100,7 @@ export default class MeshBulk {
     getMaterial(){
         const bulkMaterial = this.meshBulk.material;
         let material = null;
+
         switch(bulkMaterial.type){
             case MeshBasicMaterial.name:
                     material = new MeshBasicMaterial({

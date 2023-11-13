@@ -65,23 +65,24 @@ body {
     justify-content: space-around;
 }
 
-.geometry-grid.active {
+.item-grid.active {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(50px, 1fr));
     gap: 10px;
+    width: 320px;
     max-height: 60vh;
     overflow-y: auto;
 }
-.geometry-grid {
+.item-grid {
     display: none;
 }
 
-.material-list.active {
+.item-list.active {
     display: inline-block;
     max-height: 60vh;
     overflow-y: auto;
 }
-.material-list {
+.item-list {
     display: none;
 }
 

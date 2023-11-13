@@ -55,8 +55,7 @@ export default class MeshInfo {
         if(mesh.material instanceof MeshBasicMaterial){
             this.materialColor = `#${mesh.material.color.getHexString()?? 'ffffff'}`;
             this.materialOpacity = mesh.material.opacity;
-            // this.materialMap = mesh.material.map;
-            // console.log(mesh.material.map);
+            console.log(mesh.material);
         }
         
         
