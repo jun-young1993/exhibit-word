@@ -1,11 +1,19 @@
-import {BoxGeometry, Mesh, MeshBasicMaterial, SphereGeometry} from "three";
+import {BoxGeometry, Mesh, MeshBasicMaterial, RepeatWrapping, SphereGeometry, TextureLoader} from "three";
 import id from "ajv/lib/vocabularies/core/id";
 import {BufferGeometry} from "three/src/core/BufferGeometry";
 
+
+export interface BulkMaterialTextureInterface {
+    wrapT: number
+    wrapS: number
+    repeatX: number
+    repeatY: number
+    src: string
+}
 export interface BulkMaterialInterface {
     id: string
     color?: string
-    map?: string
+    texture?: BulkMaterialTextureInterface
     opacity: number
     type: string
 }
@@ -100,13 +108,23 @@ export default class MeshBulk {
     getMaterial(){
         const bulkMaterial = this.meshBulk.material;
         let material = null;
-
+        let texture = null;
+        
+        if(this.meshBulk.material.texture){
+            const textureLoader = new TextureLoader();
+            texture = textureLoader.load(this.meshBulk.material.texture.src);
+                
+            // texture.wrapS = this.meshBulk.material.texture.wrapS;
+            // texture.wrapT = this.meshBulk.material.texture.wrapT;
+            
+            texture.repeat.set(this.meshBulk.material.texture.repeatX,this.meshBulk.material.texture.repeatY);
+        }
         switch(bulkMaterial.type){
             case MeshBasicMaterial.name:
                     material = new MeshBasicMaterial({
                         color: bulkMaterial.color,
                         opacity: bulkMaterial.opacity,
-                        map: null
+                        map: texture
                     })
                 break;
         }

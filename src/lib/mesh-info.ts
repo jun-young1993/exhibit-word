@@ -1,4 +1,4 @@
-import {Box3, BoxGeometry, Material, Mesh, MeshBasicMaterial, Object3DEventMap, Vector3} from "three";
+import {Box3, BoxGeometry, Material, Mesh, MeshBasicMaterial, Object3DEventMap, Texture, Vector3} from "three";
 
 
 
@@ -20,7 +20,7 @@ export default class MeshInfo {
     private geometryType: string;
     private materialColor: string = '#ffffff';
     private materialOpacity: number = 1;
-    private materialMap: string | null = null;
+    private materialTexture: any = null;
     constructor(mesh: Mesh) {
         const {
             rotation : {x: rotationX , y: rotationY ,z: rotationZ},
@@ -56,6 +56,21 @@ export default class MeshInfo {
             this.materialColor = `#${mesh.material.color.getHexString()?? 'ffffff'}`;
             this.materialOpacity = mesh.material.opacity;
             console.log(mesh.material);
+            if(mesh.material.map instanceof Texture){
+                
+                
+                
+                
+                
+                this. materialTexture = {
+                    wrapT: mesh.material.map.wrapT,
+                    wrapS: mesh.material.map.wrapS,
+                    repeatX: mesh.material.map.repeat.x,
+                    repeatY: mesh.material.map.repeat.y,
+                    src: mesh.material.map.source.data.src
+                }
+            }
+            
         }
         
         
@@ -80,14 +95,14 @@ export default class MeshInfo {
                 type: this.materialType,
                 color: this.materialColor,
                 opacity: this.materialOpacity,
-                map: null
             },
             geometry: {
                 type: this.geometryType,
                 width: this.width,
                 height: this.height,
                 depth: this.depth
-            }
+            },
+            texture: this. materialTexture
         }
     }
 }
