@@ -55,7 +55,7 @@ export default class MeshInfo {
         if(mesh.material instanceof MeshBasicMaterial){
             this.materialColor = `#${mesh.material.color.getHexString()?? 'ffffff'}`;
             this.materialOpacity = mesh.material.opacity;
-            console.log(mesh.material);
+
             if(mesh.material.map instanceof Texture){
                 
                 
@@ -67,7 +67,7 @@ export default class MeshInfo {
                     wrapS: mesh.material.map.wrapS,
                     repeatX: mesh.material.map.repeat.x,
                     repeatY: mesh.material.map.repeat.y,
-                    src: mesh.material.map.source.data.src
+                    imageId: mesh.material.map.uuid
                 }
             }
             
@@ -95,6 +95,7 @@ export default class MeshInfo {
                 type: this.materialType,
                 color: this.materialColor,
                 opacity: this.materialOpacity,
+                texture: this. materialTexture
             },
             geometry: {
                 type: this.geometryType,
@@ -102,7 +103,6 @@ export default class MeshInfo {
                 height: this.height,
                 depth: this.depth
             },
-            texture: this. materialTexture
         }
     }
 }

@@ -2,6 +2,7 @@ import Item from "contents/items/item";
 import {Box3, Mesh, Vector3} from "three";
 import CreateMeshBulkDto from "../dto/create-mesh-bulk-dto";
 import {MeshBulkInterface} from "../entities/mesh-bulk";
+import {serverDomain} from "../config";
 
 interface ClientInterface {
   domain?: string,
@@ -9,7 +10,7 @@ interface ClientInterface {
 }
 
 class Client {
-  protected domain: string = 'http://localhost:3000'
+  protected domain: string = serverDomain
   protected prefix: string = '/'
 
   constructor(clientInterface: ClientInterface) {
@@ -61,8 +62,34 @@ class MeshClient extends Client {
 
   }
 }
-
 export const meshClient = new MeshClient();
+
+class ImageClient extends Client {
+
+  constructor() {
+    super({
+      prefix: '/api/v1/images'
+    });
+  }
+
+  getImages(purpose: string){
+    return this.fetch(`/purpose/${purpose}`,{
+      method: 'get',
+      headers: {
+        'Content-Type': 'application/json',
+        'accept': '*/*'
+      },
+    })
+  }
+
+
+
+  getFileUrl(id: string): string {
+    const endpoint = '/file'
+    return `${this.domain+this.prefix+endpoint}/${id}`
+  }
+}
+export const imageClient = new ImageClient();
 
 class ItemClient extends Client {
   constructor() {

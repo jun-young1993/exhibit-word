@@ -15,9 +15,11 @@ import {CSS3DObject, CSS3DRenderer} from "three/examples/jsm/renderers/CSS3DRend
 import dat from 'dat.gui';
 import {TransformControls} from "three/examples/jsm/controls/TransformControls";
 import MeshInfo from "lib/mesh-info";
-import {meshClient} from "lib/clients";
+import {imageClient, meshClient} from "lib/clients";
 import {constants} from "http2";
 import MeshBulk from "../entities/mesh-bulk";
+import TextureItemInterface from "interfaces/texture-item.interface";
+import ImageInterface from "interfaces/texture-item.interface";
 
 
 
@@ -268,28 +270,29 @@ export default class Editor {
             //     name : 'Text'
             // }
         ];
-        
-        this.ui.body.geometry_list.className = "item-grid active";
-        geometryItems.forEach((geometryItem) => {
-            this.ui.body.geometry_list.appendChild(this.item(geometryItem));
-        });
 
-        const textureItems = [{
-            type: 'texture',
-            name: 'cement',
-            path: './image/cement.jpg'
-        },{
-            type: 'texture',
-            name: 'granite-sleek-surface',
-            path: './image/granite-sleek-surface.jpg'
-        },{
-            type: 'texture',
-            name: 'marble',
-            path: './image/marble-640.jpg'
-        }];
-        textureItems.forEach((textureItem) => {
-            this.ui.body.texture_list.appendChild(this.item(textureItem));
-        })
+        imageClient.getImages('geometry')
+            .then((response) => response.json())
+            .then((geometryItems: ImageInterface[]) => {
+                this.ui.body.geometry_list.className = "item-grid active";
+                geometryItems.forEach((geometryItem) => {
+                    this.ui.body.geometry_list.appendChild(this.item(geometryItem));
+                });
+            })
+        
+
+
+        imageClient.getImages('texture')
+            .then((response) => {
+                return response.json();
+            })
+            .then((textureItems:ImageInterface[]) => {
+
+                textureItems.forEach((textureItem) => {
+                    this.ui.body.texture_list.appendChild(this.item(textureItem));
+                })
+            })
+
 
     }
 
@@ -301,11 +304,14 @@ export default class Editor {
         itemImage.className = 'item-img';
         itemImage.alt = '아이템 이미지';
         // @ts-ignore
-        itemImage.src = item.path;
+        itemImage.src = imageClient.getFileUrl(item.id);
 
 
         // @ts-ignore
-        itemImage.dataset.type =item.type;
+        itemImage.dataset.id = item.id;
+
+        // @ts-ignore
+        itemImage.dataset.type =item.type ?? item.purpose;
         // @ts-ignore
         itemImage.dataset.name = item.name;
 
@@ -477,7 +483,7 @@ export default class Editor {
 
             if(type === 'geometry'){
                 let geometry = null;
-                if(name === 'Box'){
+                if(name === 'BoxGeometry'){
                     geometry = new BoxGeometry(50, 50, 50)
 
                 }
@@ -544,7 +550,8 @@ export default class Editor {
 
                     // 이미지 소스를 텍스처로 로드
                     const texture = this.textureLoader.load(imageElement.src);
-
+                    // @ts-ignore
+                    texture.uuid = imageElement.dataset.id as string;
                     // 텍스처를 메테리얼의 맵에 할당
                     // @ts-ignore
                     this.editing.material.map = texture;
